@@ -21,12 +21,17 @@ class AssessmentScraper(BaseScraper):
     This class is responsible for scraping assessment details from its respective pages.
     """
     
-    def extract_assessment_details(self, tests: List[IndividualTest], class_selector: str = "col-12 col-md-8"):
+    def extract_assessment_details(
+        self, 
+        tests: List[IndividualTest], 
+        container_class_selector: str = "col-12 col-md-8",
+        container_row_selector: str = "div.product-catalogue-training-calendar__row.typ",
+    ):
         assessment_details = []
         for test in tests:
             soup = BeautifulSoup(self.crawl(test.url), "html.parser")
-            container = soup.find("div", {"class": class_selector}).find_all(  # type: ignore
-                "div", attrs={"class": "product-catalogue-training-calendar__row typ"}
+            container = soup.find("div", {"class": container_class_selector}).find_all(  # type: ignore
+                "div", attrs={"class": container_row_selector}
             )  # type: ignore
             
             description = container[0].p.string  # type: ignore
