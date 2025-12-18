@@ -3,7 +3,10 @@ from app.utils.envs import Envs
 
 
 _PROVIDER_MAP = {
-    "google": google_embedder,
+    "google": {
+        "embedder": google_embedder,
+        "dimension": 3072,
+    },
 }
 
 def get_embedder():
