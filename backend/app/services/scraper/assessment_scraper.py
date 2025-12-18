@@ -1,6 +1,8 @@
-from typing import List
+from modulefinder import test
+from typing import List, Optional
 from bs4 import BeautifulSoup
 from langchain_core.documents import Document
+import tqdm
 
 from app.pydantic_models.data_model import IndividualTest
 from app.services.scraper.base_scraper import BaseScraper
@@ -25,53 +27,76 @@ class AssessmentScraper(BaseScraper):
         self, 
         tests: List[IndividualTest], 
         container_class_selector: str = "col-12 col-md-8",
-        container_row_selector: str = "div.product-catalogue-training-calendar__row.typ",
+        container_row_selector: str = "product-catalogue-training-calendar__row typ",
     ):
-        assessment_details = []
-        for test in tests:
+        for test in tqdm.tqdm(tests, unit=("assessments")):
             soup = BeautifulSoup(self.crawl(test.url), "html.parser")
+            
             container = soup.find("div", {"class": container_class_selector}).find_all(  # type: ignore
                 "div", attrs={"class": container_row_selector}
             )  # type: ignore
-            
-            description = container[0].p.string  # type: ignore
+
+            description = container[0].p.text  # type: ignore
             
             # Additional details for relevant recommendation
-            job_levels = container[1].p.string.split(", ")  # type: ignore
-            languages = container[2].p.string  # type: ignore
+            job_levels = None
+            if len(container) > 2:
+                job_levels = container[1].p.text  # type: ignore
+                
+            languages = None
+            if len(container) > 3:
+                languages = container[2].p.text  # type: ignore
             
             duration = 0
-            if len(container) == 4:
-                duration_text = container[3].p.text  # type: ignore
-                duration = int(''.join(filter(str.isdigit, duration_text)))
+            if container[-1].p:
+                duration_text = container[-1].p.text  # type: ignore
+                extracted_duration = ''.join(filter(str.isdigit, duration_text))
+                if extracted_duration.isdigit():
+                    duration = int(extracted_duration)
+                else:
+                    duration = 0
             
             test.description = description  # type: ignore
             test.duration = duration
-            
             test.page_content = f"""
 Assessment name: {test.name}
 
 Description: {description}
 
-This assessment is designed for {", ".join(job_levels)} roles.
-It supports testing in {languages}.
+{self.handle_job_levels(job_levels)}
+{self.handle_testing_lang(languages)}
 
-This is a {self.duration_bucketing(duration)}-duration assessment and {"supports" if test.remote_support == "Yes" else "does not support"} remote testing.
+{self.handle_duration(duration)}
+{self.handle_remote_testing(test.remote_support == "Yes")}
 
-Test category: {self.test_type_description(test.test_type)}.
+Test category: {self.handle_test_types(test.test_type)}.
 """
+            print(f"Test {test.name}, desc: {description}, duration: {duration}, job_levels: {job_levels}, languages: {languages}\n")
 
-    def test_type_description(self, test_types: List[str]) -> str:
+    def handle_job_levels(self, job_levels: Optional[str]) -> str:
+        if job_levels is None:
+            return ""
+        return f"This assessment is designed for {job_levels} roles."
+    
+    def handle_remote_testing(self, remote_support: bool) -> str:
+        return f"This assessment {'supports' if remote_support else 'does not support'} remote testing."
+    
+    def handle_testing_lang(self, languages: Optional[str]) -> str:
+        if languages is None:
+            return ""
+        return f"It supports testing in {languages}."
+
+    def handle_test_types(self, test_types: List[str]) -> str:
         descriptions = [TEST_TYPE_MAP.get(ttype, "Unknown") for ttype in test_types]
         return ", ".join(descriptions)
     
-    def duration_bucketing(self, duration: int) -> str:
-        if duration == 0:
-            return "not specified"
+    def handle_duration(self, duration: int) -> str:
+        bucket = ""
         if duration <= 30:
-            return "short"
+            bucket = "short"
         elif 30 < duration <= 60:
-            return "medium"
+            bucket = "medium"
         else:
-            return "long"
+            bucket = "long"
+        return f"This is a {bucket}-duration assessment."
             
