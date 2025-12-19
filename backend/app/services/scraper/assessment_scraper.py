@@ -67,9 +67,9 @@ Description: {description}
 {self.handle_testing_lang(languages)}
 
 {self.handle_duration(duration)}
-{self.handle_remote_testing(test.remote_support == "Yes")}
+{self.handle_remote_testing(test.remote_support)}
 
-Test category: {self.handle_test_types(test.test_type)}.
+Assessment category: {self.handle_test_types(test.test_type)}.
 """
             print(f"Test {test.name}, desc: {description}, duration: {duration}, job_levels: {job_levels}, languages: {languages}\n")
 
@@ -84,7 +84,7 @@ Test category: {self.handle_test_types(test.test_type)}.
     def handle_testing_lang(self, languages: Optional[str]) -> str:
         if languages is None:
             return ""
-        return f"It supports testing in {languages}."
+        return f"Assessment available in language(s): {languages}."
 
     def handle_test_types(self, test_types: List[str]) -> str:
         descriptions = [TEST_TYPE_MAP.get(ttype, "Unknown") for ttype in test_types]
