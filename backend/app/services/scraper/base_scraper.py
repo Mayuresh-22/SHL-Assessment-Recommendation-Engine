@@ -1,8 +1,6 @@
 import random
 import time
-
 import requests
-from fp.fp import FreeProxy
 
 from app.utils.envs import Envs
 
