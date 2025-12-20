@@ -40,7 +40,6 @@ class Recommender:
             retrieved_tests
         )
         print(f"Reranked {len(reranked_tests)} tests, displaying...")
-        pprint(reranked_tests)
         balanced_tests = self.balancer.balance_selection(
             reranked_tests,
             transformed_query.preferred_intent
