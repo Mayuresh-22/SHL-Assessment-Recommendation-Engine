@@ -1,18 +1,11 @@
-import json
-from pprint import pprint
+import uvicorn
 
-from app.services.balancer.balancer import ResultBalancer
 from app.services.ingester.data_ingester import DataIngester
-from app.services.llm.factory import get_llm
-from app.services.query.query_transformer import QueryTransformer
-from app.services.recommender.recommender import Recommender
-from app.services.reranker.factory import get_reranker
-from app.services.retriever.factory import get_retriever
 from app.services.scraper.assessment_scraper import AssessmentScraper
 from app.services.scraper.catalogue_scraper import CatalogueScraper
 from app.services.text_splitter.factory import get_text_splitter
 from app.services.vector_store.factory import get_vector_store
-from app.utils.envs import Envs
+from app.services.api.main import app
 from app.utils.config import load_config
 
 
@@ -21,7 +14,13 @@ def run_ingestion(config: dict):
     catalogue_scraper = CatalogueScraper()
     assessment_scraper = AssessmentScraper()
     vector_store = get_vector_store()
-    text_splitter = get_text_splitter()
+    
+    if config.get("DATA_INGESTION_WITH_SPLIT", False):
+        print("Using text splitter for data ingestion...")
+        text_splitter = get_text_splitter()
+    else:
+        print("Not using text splitter for data ingestion...")
+        text_splitter = None
     
     ingester = DataIngester(
         catalogue_scraper=catalogue_scraper,
@@ -49,6 +48,9 @@ def main():
         print("Completed data ingestion.")
     else:
         print("Data ingestion is disabled. Skipping...")
+    
+    # start the fastapi server
+    uvicorn.run(app, host="0.0.0.0", port=8000)
     
 
 if __name__ == "__main__":
