@@ -44,7 +44,7 @@ class ResultBalancer:
         
         final_docs = []
         appearance_counts = defaultdict(int)
-        RATIO = 0.9999
+        RATIO = 0.55
         top_score = reranked_docs[0][1]
         adjusted_candidates = []
 
