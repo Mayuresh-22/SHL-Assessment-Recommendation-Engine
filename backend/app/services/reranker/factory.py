@@ -1,3 +1,4 @@
+from app.services.reranker.base_reranker import BaseReranker
 from app.services.reranker.llm_reranker import llm_reranker
 from app.services.reranker.pinecone_reranker import pinecone_reranker
 from app.services.reranker.cohere_reranker import cohere_reranker
@@ -10,7 +11,7 @@ _PROVIDER_MAP = {
     "cohere": cohere_reranker,
 }
 
-def get_reranker():
+def get_reranker() -> BaseReranker:
     provider = (getattr(Envs, "RERANKER_PROVIDER", None) or "pinecone").lower()
     if provider not in _PROVIDER_MAP:
         raise ValueError(f"Unsupported reranker provider: {provider}")
