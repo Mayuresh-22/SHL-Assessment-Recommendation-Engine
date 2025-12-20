@@ -24,3 +24,4 @@ class Envs:
     MAX_RESULTS: int  = int(os.getenv("MAX_RESULTS", "10"))
     TOP_K: int  = int(os.getenv("TOP_K", "50"))
     FETCH_K: int  = int(os.getenv("FETCH_K", "100"))
+    LAMBDA_MULT: float = float(os.getenv("LAMBDA_MULT", "0.7"))
