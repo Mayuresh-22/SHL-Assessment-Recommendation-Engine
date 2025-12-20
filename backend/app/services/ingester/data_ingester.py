@@ -1,5 +1,5 @@
 from importlib import metadata
-from typing import List
+from typing import List, Optional
 from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStore
 from langchain_text_splitters import TextSplitter
@@ -25,7 +25,7 @@ class DataIngester:
         catalogue_scraper: CatalogueScraper, 
         assessment_scraper: AssessmentScraper,
         vector_store: VectorStore,
-        text_splitter: TextSplitter,
+        text_splitter: Optional[TextSplitter],
         start_from_batch: int = 0,
         # Actually it can be 373, cause last page only has 5 tests
         # and last page is 32nd starts from 31*12=372
@@ -50,7 +50,7 @@ class DataIngester:
         for test in tests:
             all_docs.append(
                 Document(
-                    page_content=test.page_content,
+                    page_content=test.page_content,  # type: ignore
                     metadata={
                         "url": test.url,
                         "name": test.name,
@@ -85,8 +85,10 @@ class DataIngester:
                 self.assessment_scraper.extract_assessment_details(tests)
                 docs = self._create_documents(tests)
                 
-                split_docs = self.text_splitter.split_documents(docs)
-                self.vector_store.add_documents(split_docs)
+                if self.text_splitter:
+                    docs = self.text_splitter.split_documents(docs)
+                
+                self.vector_store.add_documents(docs)
                 
                 curr_batch += 1
                 
