@@ -3,6 +3,7 @@ from langchain_core.documents import Document
 from langchain_pinecone import PineconeRerank
 
 from app.services.reranker.base_reranker import BaseReranker
+from langchain_core.documents import BaseDocumentCompressor
 from app.utils.envs import Envs
 
 
@@ -19,6 +20,8 @@ class PineconeReranker(BaseReranker):
             ranked_documents.append((doc, float(score)))
         
         return sorted(ranked_documents, key=lambda x: x[1], reverse=True)
-
+    
+    def get_compressor(self) -> BaseDocumentCompressor:
+        return self.reranker
 
 pinecone_reranker = PineconeReranker()

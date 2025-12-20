@@ -24,6 +24,9 @@ class LLMReranker(BaseReranker):
             ranked_documents.append((doc, float(score)))  # type: ignore
         
         return sorted(ranked_documents, key=lambda x: x[1], reverse=True)
+    
+    def get_compressor(self):  # type: ignore
+        return None
 
 
 llm_reranker = LLMReranker(llm=get_llm())
