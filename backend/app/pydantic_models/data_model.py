@@ -1,9 +1,9 @@
-from typing import List
-from pydantic import BaseModel
+from typing import List, Optional
+from pydantic import BaseModel, Field
 
 
 class IndividualTest(BaseModel):
-    page_content: str
+    page_content: Optional[str] = Field(None, exclude=True)
     url: str
     name: str
     description: str
