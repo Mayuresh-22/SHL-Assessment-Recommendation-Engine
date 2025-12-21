@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 from fastapi import APIRouter
 from groq import BaseModel
 from langchain_classic.retrievers.contextual_compression import (
@@ -13,22 +13,21 @@ from app.services.query.query_transformer import QueryTransformer
 from app.services.recommender.recommender import Recommender
 from app.services.reranker.factory import get_reranker
 from app.services.retriever.factory import get_retriever
+from app.services.scraper.assessment_scraper import TEST_TYPE_MAP
 
 
 class Body(BaseModel):
-    query: str = Field(..., min_length=1, max_length=5000)
+    query: str = Field(..., min_length=1)
 
 
 router = APIRouter(prefix="/recommend", tags=["Recommendations"])
 
 @router.post("/")
-def recommend(body: Body) -> List[IndividualTest]:
+def recommend(body: Body) -> List[Dict]:
     
     recommender = Recommender(
         query_transformer=QueryTransformer(llm=get_llm()),
-        retriever=ContextualCompressionRetriever(
-            base_compressor=get_reranker().get_compressor(), base_retriever=get_retriever()
-        ),
+        retriever=get_retriever(),
         reranker=get_reranker(),
         balancer=ResultBalancer()
     )
@@ -38,8 +37,11 @@ def recommend(body: Body) -> List[IndividualTest]:
     recommended_tests = []
     for idx, doc in enumerate(recommendations, start=1):
         del doc.metadata["relevance_score"]
+        doc.metadata["test_type"] = [TEST_TYPE_MAP[test_type] for test_type in doc.metadata.get("test_type", [])]
+        doc.metadata["adaptive_support"] = "Yes" if doc.metadata.get("adaptive_support", False) else "No"
+        doc.metadata["remote_support"] = "Yes" if doc.metadata.get("remote_support", False) else "No"
         recommended_tests.append(
-            IndividualTest(**doc.metadata)
+            doc.metadata
         )
     
     return recommended_tests
