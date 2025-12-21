@@ -14,7 +14,7 @@ class TestSetRecommendation:
         reranker: BaseReranker,
         balancer: ResultBalancer,
         query_transformer: QueryTransformer,
-        dataset_file: str = "app/evaluation/test_set_dataset.xlsx",
+        dataset_file: str = "app/evaluation/dataset.xlsx",
         results_file: str = "test_set_predictions.csv"
     ):
         self.retriever = retriever
