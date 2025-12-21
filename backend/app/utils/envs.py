@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 class Envs:
-    BASE_SHL_URL: str = os.getenv("BASE_SHL_URL", "https://www.shl.com")
+    BASE_SHL_URL: str = os.getenv("BASE_SHL_URL", "https://www.shl.com/solutions")
     SHL_PRODUCT_CATALOGUE_URL: str = os.getenv("SHL_PRODUCT_CATALOGUE_URL", "")
     EMBEDDER: str = os.getenv("EMBEDDER", "google")
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
