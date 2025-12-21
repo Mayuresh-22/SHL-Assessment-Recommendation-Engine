@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Set
 from pydantic import BaseModel, Field
 
 
@@ -21,3 +21,14 @@ class PreferredIntent(BaseModel):
 class TransformedQuery(BaseModel):
     rewritten_query: str
     preferred_intent: PreferredIntent
+
+
+class LLMStructuredOutput(BaseModel):
+    rewritten_query: str
+    preferred_test_types: List[str]
+    duration_preference: Optional[str]
+
+
+class DatasetRow(BaseModel):
+    query: str
+    urls: Set[str]
