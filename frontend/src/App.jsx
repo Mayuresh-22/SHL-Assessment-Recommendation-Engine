@@ -20,7 +20,7 @@ export default function App() {
         body: JSON.stringify({ query }),
       });
       const data = await res.json();
-      setResults(data);
+      setResults(data["recommended_assessments"]);
     } catch (e) {
       setError("An error occurred while fetching recommendations.");
     } finally {
