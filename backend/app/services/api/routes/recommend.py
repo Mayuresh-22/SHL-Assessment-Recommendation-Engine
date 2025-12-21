@@ -23,7 +23,7 @@ class Body(BaseModel):
 router = APIRouter(prefix="/recommend", tags=["Recommendations"])
 
 @router.post("/")
-def recommend(body: Body) -> List[Dict]:
+def recommend(body: Body):
     
     recommender = Recommender(
         query_transformer=QueryTransformer(llm=get_llm()),
@@ -44,4 +44,6 @@ def recommend(body: Body) -> List[Dict]:
             doc.metadata
         )
     
-    return recommended_tests
+    return {
+        "recommended_assessments": recommended_tests
+    }
