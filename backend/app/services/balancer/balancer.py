@@ -38,7 +38,7 @@ class ResultBalancer:
         self,
         reranked_docs: List[Tuple[Document, float]],
         intent: PreferredIntent
-    ) -> list[Document]:
+    ) -> List[Document]:
         if not reranked_docs:
             return []
         
