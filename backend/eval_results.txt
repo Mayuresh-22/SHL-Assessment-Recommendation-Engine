@@ -1,0 +1,43 @@
+Loading dataset from app/evaluation/dataset.xlsx...
+Loaded 10 queries from the dataset.
+Transforming all queries in the dataset...
+All queries transformed.
+
+==================================================
+EVALUATING RETRIEVER
+==================================================
+Evaluate query 1/10: Recall@K = 0.8000
+Evaluate query 2/10: Recall@K = 0.3333
+Evaluate query 3/10: Recall@K = 0.6667
+Evaluate query 4/10: Recall@K = 0.4000
+Evaluate query 5/10: Recall@K = 0.8000
+Evaluate query 6/10: Recall@K = 0.8889
+Evaluate query 7/10: Recall@K = 0.1667
+Evaluate query 8/10: Recall@K = 0.2000
+Evaluate query 9/10: Recall@K = 0.0000
+Evaluate query 10/10: Recall@K = 0.7000
+
+Retriever Average Recall@K: 0.4956
+
+==================================================
+EVALUATING RERANKER + BALANCER PIPELINE
+==================================================
+Evaluate query 1/10: Recall@K = 0.8000
+Evaluate query 2/10: Recall@K = 0.1111
+Evaluate query 3/10: Recall@K = 0.6667
+Evaluate query 4/10: Recall@K = 0.2000
+Evaluate query 5/10: Recall@K = 0.6000
+Evaluate query 6/10: Recall@K = 0.6667
+Evaluate query 7/10: Recall@K = 0.0000
+Evaluate query 8/10: Recall@K = 0.0000
+Evaluate query 9/10: Recall@K = 0.0000
+Evaluate query 10/10: Recall@K = 0.4000
+
+Reranker+Balancer Average Recall@K: 0.3444
+
+==================================================
+EVALUATION SUMMARY
+==================================================
+Retriever Recall@K:          0.4956
+Reranker+Balancer Recall@K:  0.3444
+==================================================

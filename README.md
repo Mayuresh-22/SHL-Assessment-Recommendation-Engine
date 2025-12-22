@@ -257,16 +257,59 @@ curl -X POST "http://localhost:8000/recommend/" \
 
 ---
 
-## Evaluation
+## Experiments & Evaluation
 
-Run evaluation to measure retrieval and pipeline performance:
+### Approach
+
+The system was iteratively refined based on evaluation metrics. Key experiments included:
+
+**Document Representation:**
+- Initial approach used chunked/split documents for ingestion
+- Observed severe degradation—unrelated assessments with similar metadata (job levels, categories) were incorrectly associated
+- Final approach: Each assessment treated as a single semantic unit without chunking, resulting in significant retrieval improvement
+
+**Query Transformation:**
+- Evolved from simple rewriting to structured instructions with SHL-style query templates
+- Added few-shot examples from different test categories to reduce bias
+- Query intentionally phrased to match assessment catalog descriptions for better semantic alignment
+
+**Rerankers Tested:**
+- Pinecone BGE Reranker
+- Pinecone Reranker  
+- Cohere Rerank (final choice—showed slight improvements)
+
+**Parameter Tuning:**
+
+| Parameter | Values Tested | Finding |
+|-----------|---------------|---------|
+| TOP_K | 50, 100 | Higher values increased latency without accuracy gains |
+| FETCH_K | 100, 250 | MMR's iterative nature caused latency spikes at 250 |
+| LAMBDA_MULT | 0.7, 1.0 | 0.7 balanced relevance and diversity |
+
+### Evaluation Results
+
+Evaluated on SHL-provided training set using Recall@K:
+
+| Stage | Metric | Value |
+|-------|--------|-------|
+| Retrieval | Recall@50 | 0.50 |
+| Full Pipeline | Recall@K | 0.34 |
+
+Check query wise recall evaluation in [backend/eval_results.txt](backend/eval_results.txt)
+
+**Observations:**
+- Technical roles show higher retrieval recall than generic administrative roles
+- Behavioral assessments harder to retrieve due to implicit signals in job descriptions
+- Balancer intentionally trades some recall for recommendation diversity
+
+### Run Evaluation
 
 ```bash
 cd backend
 uv run main.py eval
 ```
 
-Results are saved to `eval_results.txt` with Recall@K metrics.
+Results are saved to `eval_results.txt`.
 
 ### Generate Test Set Predictions
 
