@@ -10,6 +10,9 @@ An AI-powered recommendation system that suggests the most relevant SHL assessme
 
 ---
 
+## Live (See it in action)
+Web app: https://mayuresh-shl-assessment-recommendation-frontend.pages.dev
+
 ## Overview
 
 This system helps HR professionals and hiring managers find the most suitable SHL assessments by:
